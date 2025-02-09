@@ -1,0 +1,1458 @@
+# espanso match file
+# Original author: JeansenVaars
+# Modified by Guillaume Thomas
+# Donations to JeansenVaars' ko-fi account  -> https://ko-fi.com/JeansenVaars
+# JeansenVaars' website -> https://jvhouse.xyz/
+# Use at your OWN RISK
+
+matches:
+  # OpenRouter API KEY Setup
+  - trigger: ":llmsetup"
+    label: "Setup OpenRouter API Key"
+    replace: "{{output}}"
+    vars:
+      - name: form_llm_setup
+        type: form
+        params:
+          layout: |
+            Setup your OpenRouter API Key:
+            [[key]]
+
+            * NOTE: your key will be saved in config/openrouter.txt
+          fields:
+            key:
+              type: text
+              multiline: true
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_setup
+            - --prompt
+            - "{{form_llm_setup.key}}"
+  # LLM new conversation
+  - triggers: [":llmcall", ":llmnew", ":llmstart"]
+    label: "New LLM conversation"
+    replace: "{{output}}"
+    vars:
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM Chat: Starts a NEW conversation (clear):
+            [[prompt]]
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: use :llmchat to CONTINUE this conversation later
+          fields:
+            prompt:
+              type: text
+              multiline: true
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_chat_init
+            - --prompt
+            - "{{form_llm.prompt}}"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+  # Openrouter continue conversation
+  - triggers: [":llmcall", ":llmchat", ":llmcontinue", ":llmadd"]
+    label: "Continue LLM conversation"
+    replace: "{{output}}"
+    vars:
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            OpenRouter: Continues the previous conversation.
+            [[prompt]]
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: use :llmstart to begin a new AI chat, erasing history.
+          fields:
+            prompt:
+              type: text
+              multiline: true
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-flash-1.5'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '512'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_chat
+            - --prompt
+            - "{{form_llm.prompt}}"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+  # OpenRouter LLM isolated question
+  - triggers: [":llmcall", ":llmquestion", ":llmsingle", ":llmask"]
+    label: "Single LLM question"
+    replace: "{{output}}"
+    vars:
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Single isolated question! (ignores context, and not recorded)
+            [[prompt]]
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            prompt:
+              type: text
+              multiline: true
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-flash-1.5'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_chat_isolate
+            - --prompt
+            - "{{form_llm.prompt}}"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+  # OpenRouter LLM cleanup history
+  - triggers: [":llmcall", ":llmforget", ":llmerase", ":llmclear"]
+    label: "Clear LLM conversation"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_forget
+  # OpenRouter LLM recall conversation
+  - triggers: [":llmcall", ":llmmemory", ":llmhistory", ":llmlog"]
+    label: "Show LLM conversation history"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - llm_knowledge
+
+  # The next part of the script deals with image generation using Dall-E. It is commented out since it won't work with OpenRouter. I left it here in case a user wants to restore OpenAI access in the script and use Dall-E
+
+  # OpenAI Dall-E
+  # - triggers: [":aicall", ":aiimg", ":aiimage", ":dall-e"]
+  #   label: "Generate a Dall-E Image"
+  #   replace: "{{output}}"
+  #   vars:
+  #     - name: form_ai
+  #       type: form
+  #       params:
+  #         layout: |
+  #           Prompt:
+  #           [[prompt]]
+  #           Size:
+  #           [[img_size]]
+  #           Format:
+  #           [[img_format]]
+  #           Quality:
+  #           [[img_quality]]
+  #           Style:
+  #           [[img_style]]
+  #         fields:
+  #           prompt:
+  #             type: text
+  #             multiline: true
+  #           img_quality:
+  #             type: list
+  #             values:
+  #               - 'standard'
+  #               - 'hd'
+  #             default:
+  #               'standard'
+  #           img_style:
+  #             type: list
+  #             values:
+  #               - 'vivid'
+  #               - 'natural'
+  #             default:
+  #               'vivid'
+  #           img_size:
+  #             type: list
+  #             values:
+  #               - '1024x1024'
+  #               - '1792x1024'
+  #               - '1024x1792'
+  #             default:
+  #               '1024x1024'
+  #           img_format:
+  #             type: list
+  #             values:
+  #               - 'url'
+  #               - 'markdown'
+  #               - 'b64_json'
+  #             default:
+  #               'markdown'
+  #     - name: output
+  #       type: script
+  #       params:
+  #         args:
+  #            - python
+  #           - "%CONFIG%/scripts/espanso_llm_core.py"
+  #           - ai_image
+  #           - --prompt
+  #           - "{{form_ai.prompt}}"
+  #           - --img_size
+  #           - "{{form_ai.img_size}}"
+  #           - --img_format
+  #           - "{{form_ai.img_format}}"
+  #           - --img_quality
+  #           - "{{form_ai.img_quality}}"
+  #           - --img_style
+  #           - "{{form_ai.img_style}}"
+
+  # The rest of the script defines utilities added to the original PBTW script
+
+  # OpenRouter LLM isolated question
+  - triggers: [":llmcall", ":quick"]
+    label: "Send question in clipboard to LLM"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - quick
+            - --prompt
+            - "Please answer the following request from the user concisely: {{clipb}}"
+            - --model
+            - 'google/gemini-2.0-flash-001'
+            - --temperature
+            - "0.75"
+            - --tokens
+            - "512"
+
+  - triggers: [":llmcall", ":check_cn"]
+    label: "Check Chinese clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to check Chinese language in clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - check_cn
+            - --prompt
+            - "Is the following discourse or expression well formed and does it sound natural in Chinese? If not, present some alternatives. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":check_en"]
+    label: "Check English clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to check English language in clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - check_en
+            - --prompt
+            - "Is the following discourse or expression well formed and does it sound natural in English? If not, present some alternatives. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":check_fr"]
+    label: "Check French clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to check French language in clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - check_fr
+            - --prompt
+            - "Is the following discourse or expression well formed and does it sound natural in French? If not, present some alternatives. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":check_pt"]
+    label: "Check Portuguese clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to check Portuguese language in clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - check_pt
+            - --prompt
+            - "Is the following discourse or expression well formed and does it sound natural in Brazilian Portuguese? If not, present some alternatives. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":check_sp"]
+    label: "Check Spanish clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to check Spanish language in clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - check_sp
+            - --prompt
+            - "Is the following discourse or expression well formed and does it sound natural in Spanish? If not, present some alternatives. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":cr_cn"]
+    label: "Correct Chinese clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to correct Chinese clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - cr_cn
+            - --prompt
+            - "Please correct any lexical or grammatical mistakes in the following Chinese sentence; answer concisely and only return the corrected sentence; if no correction is needed, return the original sentence; do not add any comments:\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"     
+
+  - triggers: [":llmcall", ":cr_en"]
+    label: "Correct English clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to correct English clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - cr_en
+            - --prompt
+            - "Please correct any spelling or grammar mistakes in the following English sentence; answer concisely and only return the corrected sentence; if no correction is needed, return the original sentence; do not add any comments:\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"     
+
+  - triggers: [":llmcall", ":cr_fr"]
+    label: "Correct French clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to correct French clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - cr_fr
+            - --prompt
+            - "Please correct any spelling or grammar mistakes in the following French sentence; answer concisely and only return the corrected sentence; if no correction is needed, return the original sentence; do not add any comments:\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"     
+
+  - triggers: [":llmcall", ":cr_pt"]
+    label: "Correct Portuguese clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to correct Portuguese clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - cr_pt
+            - --prompt
+            - "Please correct any spelling or grammar mistakes in the following Portuguese sentence; answer concisely and only return the corrected sentence; if no correction is needed, return the original sentence; do not add any comments:\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"                    
+
+  - triggers: [":llmcall", ":cr_sp"]
+    label: "Correct Spanish clipboard content"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to correct Spanish clipboard content (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - cr_sp
+            - --prompt
+            - "Please correct any spelling or grammar mistakes in the following Spanish sentence; answer concisely and only return the corrected sentence; if no correction is needed, return the original sentence; do not add any comments:\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"     
+
+  - triggers: [":llmcall", ":tr_cn"]
+    label: "Translate clipboard content to Chinese"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to translate clipboard content to Chinese (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - tr_cn
+            - --prompt
+            - "Please translate the following text to Mandarin Chinese. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":tr_en"]
+    label: "Translate clipboard content to English"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to translate clipboard content to English (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - tr_en
+            - --prompt
+            - "Please translate the following text to English. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":tr_fr"]
+    label: "Translate clipboard content to French"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to translate clipboard content to French (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - tr_fr
+            - --prompt
+            - "Please translate the following text to French. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":tr_pt"]
+    label: "Translate clipboard content to Portuguese"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to translate clipboard content to Portuguese (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - tr_pt
+            - --prompt
+            - "Please translate the following text to Brazilian Portuguese. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
+
+  - triggers: [":llmcall", ":tr_sp"]
+    label: "Translate clipboard content to Spanish"
+    replace: "{{output}}"
+    vars:
+      - name: "clipb"
+        type: "clipboard"
+      - name: form_llm
+        type: form
+        params:
+          layout: |
+            LLM: Ask LLM to translate clipboard content to Spanish (ignores context, and not recorded)
+            Model                                      Coherence         Answer size:
+            [[model]] [[temperature]] [[tokens]]
+            
+            * NOTE: answer size and model affect pricing.
+            * NOTE: This prompt is isolated from the chat and not recorded
+          fields:
+            model:
+              type: list
+              values:
+                - 'anthropic/claude-3.5-sonnet'
+                - 'deepseek/deepseek-chat'
+                - 'google/gemini-2.0-flash-001'
+                - 'google/gemini-pro-1.5'
+                - 'x-ai/grok-2-1212'
+              default:
+                'google/gemini-2.0-flash-001'
+            temperature:
+              type: list
+              values:
+                - '2.0'
+                - '1.75'
+                - '1.5'
+                - '1.25'
+                - '1.0'
+                - '0.9'
+                - '0.75'
+                - '0.5'
+                - '0.25'
+                - '0.1'
+                - '0'
+              default: '0.75'
+            tokens:
+              type: list
+              values:
+                - '16'
+                - '32'
+                - '64'
+                - '128'
+                - '256'
+                - '512'
+                - '1024'
+                - '2048'
+                - '4096'
+              default:
+                '256'
+      - name: output
+        type: script
+        params:
+          args:
+            - python
+            - "%CONFIG%/scripts/espanso_llm_core.py"
+            - tr_sp
+            - --prompt
+            - "Please translate the following text to Spanish. Answer concisely.\n\n{{clipb}}\n\n"
+            - --model
+            - "{{form_llm.model}}"
+            - --temperature
+            - "{{form_llm.temperature}}"
+            - --tokens
+            - "{{form_llm.tokens}}"
