@@ -59,7 +59,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -133,7 +132,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-flash-1.5'
             temperature:
@@ -207,7 +205,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-flash-1.5'
             temperature:
@@ -401,7 +398,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -473,7 +469,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -545,7 +540,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -617,7 +611,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -689,7 +682,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -761,7 +753,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -833,7 +824,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -905,7 +895,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -977,7 +966,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1049,7 +1037,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1121,7 +1108,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1193,7 +1179,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1265,7 +1250,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1337,7 +1321,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
@@ -1409,7 +1392,6 @@ matches:
                 - 'deepseek/deepseek-chat'
                 - 'google/gemini-2.0-flash-001'
                 - 'google/gemini-pro-1.5'
-                - 'x-ai/grok-2-1212'
               default:
                 'google/gemini-2.0-flash-001'
             temperature:
